@@ -1,46 +1,871 @@
-Mindset Interactive WebApp
-เรียนรู้ Growth Mindset จากหนังสือ Mindset ของ Carol S. Dweck แบบลงมือทำ
-รีเซ็ตข้อมูล พิมพ์/PDF
-Progress
-0%
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mindset Interactive WebApp</title>
+  <meta name="description" content="เรียนรู้ Growth Mindset จากหนังสือ Mindset ของ Carol S. Dweck แบบลงมือทำ">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    if (window.tailwind) tailwind.config = {
+      theme: { extend: { fontFamily: { sans: ['Prompt', 'sans-serif'] } } }
+    };
+  </script>
+  <style>
+    body {
+      background:
+        radial-gradient(circle at 10% 10%, rgba(139, 92, 246, .45), transparent 40%),
+        radial-gradient(circle at 90% 20%, rgba(16, 185, 129, .35), transparent 40%),
+        radial-gradient(circle at 50% 100%, rgba(59, 130, 246, .40), transparent 50%),
+        #0f172a;
+      background-attachment: fixed;
+    }
+    .glass {
+      background: rgba(255, 255, 255, .08);
+      border: 1px solid rgba(255, 255, 255, .15);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+    }
+    .glass-strong {
+      background: rgba(255, 255, 255, .14);
+      border: 1px solid rgba(255, 255, 255, .22);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+    .tab-btn.active { background: rgba(255, 255, 255, .9); color: #1e1b4b; }
+    .fade-in { animation: fade .3s ease; }
+    @keyframes fade { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+    .scrollbar-thin::-webkit-scrollbar { height: 6px; width: 6px; }
+    .scrollbar-thin::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, .25); border-radius: 9999px; }
+    input[type=radio]:checked + span { background: #a78bfa; color: #1e1b4b; border-color: #a78bfa; }
+    @media print {
+      body { background: #fff !important; color: #000 !important; }
+      .no-print { display: none !important; }
+      .glass, .glass-strong { background: #fff !important; border: 1px solid #ccc !important; backdrop-filter: none !important; }
+      .tab-panel { display: block !important; page-break-after: always; }
+      * { color: #000 !important; }
+    }
+  </style>
+</head>
+<body class="min-h-screen font-sans text-slate-100 antialiased">
 
-บทเรียนจบแล้ว
-0/8
-Reflection
-0 ครั้ง
-Workshop 30 วัน
-0/30
-บทเรียน แบบประเมิน เกมสถานการณ์ Workshop 30 วัน Reflection Dashboard Prompt Library
-เส้นทางการเรียนรู้
+<div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:py-10">
 
-Lesson
+  <!-- Header -->
+  <header class="glass-strong rounded-3xl p-6 shadow-2xl sm:p-8">
+    <div class="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+      <div class="flex items-start gap-4">
+        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-400 to-emerald-400 text-3xl shadow-lg">🌱</div>
+        <div>
+          <h1 class="text-2xl font-bold sm:text-3xl">Mindset Interactive WebApp</h1>
+          <p class="mt-1 text-slate-300">เรียนรู้ Growth Mindset จากหนังสือ <em>Mindset</em> ของ Carol S. Dweck แบบลงมือทำ</p>
+        </div>
+      </div>
+      <div class="no-print flex flex-wrap gap-2">
+        <button id="btnReset" class="rounded-xl border border-rose-300/40 bg-rose-500/20 px-4 py-2 text-sm font-medium text-rose-100 transition hover:bg-rose-500/40">↺ รีเซ็ตข้อมูล</button>
+        <button onclick="window.print()" class="rounded-xl border border-white/20 bg-white/10 px-4 py-2 text-sm font-medium transition hover:bg-white/20">🖨 พิมพ์/PDF</button>
+      </div>
+    </div>
 
+    <div class="mt-6">
+      <div class="mb-2 flex items-center justify-between text-sm">
+        <span class="font-medium text-slate-200">Progress</span>
+        <span id="progressText" class="font-semibold text-emerald-300">0%</span>
+      </div>
+      <div class="h-3 overflow-hidden rounded-full bg-white/10">
+        <div id="progressBar" class="h-full rounded-full bg-gradient-to-r from-violet-400 via-sky-400 to-emerald-400 transition-all duration-700" style="width:0%"></div>
+      </div>
+    </div>
 
-Mini Action
+    <div class="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-3">
+      <div class="glass rounded-2xl p-4">
+        <p class="text-sm text-slate-300">📘 บทเรียนจบแล้ว</p>
+        <p id="statLessons" class="mt-1 text-2xl font-bold">0/8</p>
+      </div>
+      <div class="glass rounded-2xl p-4">
+        <p class="text-sm text-slate-300">✍️ Reflection</p>
+        <p id="statReflections" class="mt-1 text-2xl font-bold">0 ครั้ง</p>
+      </div>
+      <div class="glass rounded-2xl p-4">
+        <p class="text-sm text-slate-300">🔥 Workshop 30 วัน</p>
+        <p id="statWorkshop" class="mt-1 text-2xl font-bold">0/30</p>
+      </div>
+    </div>
+  </header>
 
-ทำบทเรียนนี้เสร็จแล้ว
-แบบประเมิน Fixed vs Growth Mindset
-ให้คะแนน 1 = ไม่เห็นด้วยมาก, 5 = เห็นด้วยมาก
+  <!-- Tabs -->
+  <nav class="no-print scrollbar-thin mt-6 overflow-x-auto">
+    <div id="tabs" class="glass inline-flex min-w-full gap-1 rounded-2xl p-1.5 sm:min-w-0">
+      <button class="tab-btn active whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium transition hover:bg-white/15" data-tab="lessons">📘 บทเรียน</button>
+      <button class="tab-btn whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium transition hover:bg-white/15" data-tab="assessment">📝 แบบประเมิน</button>
+      <button class="tab-btn whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium transition hover:bg-white/15" data-tab="game">🎮 เกมสถานการณ์</button>
+      <button class="tab-btn whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium transition hover:bg-white/15" data-tab="workshop">🔥 Workshop 30 วัน</button>
+      <button class="tab-btn whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium transition hover:bg-white/15" data-tab="reflection">✍️ Reflection</button>
+      <button class="tab-btn whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium transition hover:bg-white/15" data-tab="dashboard">📊 Dashboard</button>
+      <button class="tab-btn whitespace-nowrap rounded-xl px-4 py-2 text-sm font-medium transition hover:bg-white/15" data-tab="prompts">🤖 Prompt Library</button>
+    </div>
+  </nav>
 
-ประเมินผล
+  <main class="mt-6">
 
-เกมจำลองสถานการณ์
-เลือกคำตอบที่สะท้อน Growth Mindset มากที่สุด
+    <!-- Lessons -->
+    <section id="tab-lessons" class="tab-panel fade-in">
+      <div class="grid gap-6 lg:grid-cols-[300px_1fr]">
+        <aside class="glass rounded-3xl p-4">
+          <h2 class="mb-3 px-2 text-lg font-semibold">เส้นทางการเรียนรู้</h2>
+          <ol id="lessonList" class="space-y-1.5"></ol>
+        </aside>
+        <article id="lessonView" class="glass rounded-3xl p-6 sm:p-8"></article>
+      </div>
+    </section>
 
-คะแนนเกม
-0
-เป้าหมายไม่ใช่การตอบถูกทุกข้อ แต่คือการฝึกมองความผิดพลาดเป็นข้อมูล
-เริ่มเกมใหม่
-Workshop 30 วัน: ฝึก Growth Mindset
-ทำวันละ 1 ภารกิจเล็ก ๆ เพื่อเปลี่ยนวิธีคิดจาก “ฉันทำไม่ได้” เป็น “ฉันยังทำไม่ได้”
+    <!-- Assessment -->
+    <section id="tab-assessment" class="tab-panel fade-in hidden">
+      <div class="glass rounded-3xl p-6 sm:p-8">
+        <h2 class="text-xl font-bold">แบบประเมิน Fixed vs Growth Mindset</h2>
+        <p class="mt-1 text-slate-300">ให้คะแนน 1 = ไม่เห็นด้วยมาก, 5 = เห็นด้วยมาก — ตอบตามความรู้สึกจริง ไม่มีถูกผิด</p>
+        <form id="assessmentForm" class="mt-6 space-y-4"></form>
+        <div class="no-print mt-6 flex flex-wrap gap-3">
+          <button id="btnAssess" class="rounded-xl bg-gradient-to-r from-violet-500 to-emerald-500 px-6 py-2.5 font-semibold shadow-lg transition hover:opacity-90">ประเมินผล</button>
+          <button id="btnAssessClear" class="rounded-xl border border-white/20 bg-white/10 px-5 py-2.5 transition hover:bg-white/20">ล้างคำตอบ</button>
+        </div>
+        <div id="assessmentResult" class="mt-6"></div>
+      </div>
+    </section>
 
-Reflection Journal
-วันนี้ฉันเจอความท้าทายอะไร? ฉันเรียนรู้อะไรจากข้อผิดพลาด? พรุ่งนี้ฉันจะลองวิธีใหม่อะไร? บันทึก Reflection
-บันทึกล่าสุด
+    <!-- Game -->
+    <section id="tab-game" class="tab-panel fade-in hidden">
+      <div class="grid gap-6 lg:grid-cols-[1fr_280px]">
+        <div class="glass rounded-3xl p-6 sm:p-8">
+          <h2 class="text-xl font-bold">เกมจำลองสถานการณ์</h2>
+          <p class="mt-1 text-slate-300">เลือกคำตอบที่สะท้อน Growth Mindset มากที่สุด</p>
+          <div id="gameBox" class="mt-6"></div>
+        </div>
+        <aside class="glass rounded-3xl p-6">
+          <p class="text-sm text-slate-300">คะแนนเกม</p>
+          <p id="gameScore" class="mt-1 text-5xl font-bold text-emerald-300">0</p>
+          <p id="gameProgress" class="mt-1 text-sm text-slate-400"></p>
+          <p id="gameBest" class="mt-1 text-sm text-slate-400"></p>
+          <p class="mt-4 rounded-2xl bg-white/5 p-4 text-sm leading-relaxed text-slate-300">💡 เป้าหมายไม่ใช่การตอบถูกทุกข้อ แต่คือการฝึกมองความผิดพลาดเป็นข้อมูล</p>
+          <button id="btnGameRestart" class="no-print mt-4 w-full rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 font-medium transition hover:bg-white/20">เริ่มเกมใหม่</button>
+        </aside>
+      </div>
+    </section>
 
-Dashboard ความก้าวหน้า
-Growth Checklist
+    <!-- Workshop -->
+    <section id="tab-workshop" class="tab-panel fade-in hidden">
+      <div class="glass rounded-3xl p-6 sm:p-8">
+        <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+          <div>
+            <h2 class="text-xl font-bold">Workshop 30 วัน: ฝึก Growth Mindset</h2>
+            <p class="mt-1 text-slate-300">ทำวันละ 1 ภารกิจเล็ก ๆ เพื่อเปลี่ยนวิธีคิดจาก “ฉันทำไม่ได้” เป็น “ฉัน<strong class="text-emerald-300">ยัง</strong>ทำไม่ได้”</p>
+          </div>
+          <p id="workshopCount" class="text-sm text-slate-300"></p>
+        </div>
+        <div id="workshopGrid" class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-3"></div>
+      </div>
+    </section>
 
-Prompt Library สำหรับฝึก Growth Mindset กับ AI
-กดคัดลอก Prompt แล้วนำไปใช้กับ AI เพื่อฝึกตนเอง ทีม หรือองค์กร
+    <!-- Reflection -->
+    <section id="tab-reflection" class="tab-panel fade-in hidden">
+      <div class="grid gap-6 lg:grid-cols-2">
+        <div class="glass rounded-3xl p-6 sm:p-8">
+          <h2 class="text-xl font-bold">Reflection Journal</h2>
+          <form id="reflectionForm" class="mt-5 space-y-4">
+            <label class="block">
+              <span class="text-sm text-slate-200">วันนี้ฉันเจอความท้าทายอะไร?</span>
+              <textarea name="challenge" rows="3" required class="mt-1 w-full rounded-xl border border-white/20 bg-white/10 p-3 text-slate-100 placeholder-slate-400 outline-none focus:border-violet-300" placeholder="เช่น นำเสนองานแล้วถูกตั้งคำถามที่ตอบไม่ได้"></textarea>
+            </label>
+            <label class="block">
+              <span class="text-sm text-slate-200">ฉันเรียนรู้อะไรจากข้อผิดพลาด?</span>
+              <textarea name="learned" rows="3" class="mt-1 w-full rounded-xl border border-white/20 bg-white/10 p-3 text-slate-100 placeholder-slate-400 outline-none focus:border-violet-300" placeholder="เช่น ต้องเตรียมข้อมูลตัวเลขรองรับมากขึ้น"></textarea>
+            </label>
+            <label class="block">
+              <span class="text-sm text-slate-200">พรุ่งนี้ฉันจะลองวิธีใหม่อะไร?</span>
+              <textarea name="next" rows="3" class="mt-1 w-full rounded-xl border border-white/20 bg-white/10 p-3 text-slate-100 placeholder-slate-400 outline-none focus:border-violet-300" placeholder="เช่น ซ้อมตอบคำถามกับเพื่อนก่อน 10 นาที"></textarea>
+            </label>
+            <div>
+              <span class="text-sm text-slate-200">อารมณ์ตอนนี้</span>
+              <div id="moodPicker" class="mt-2 flex gap-2 text-2xl"></div>
+            </div>
+            <button type="submit" class="no-print rounded-xl bg-gradient-to-r from-violet-500 to-emerald-500 px-6 py-2.5 font-semibold shadow-lg transition hover:opacity-90">บันทึก Reflection</button>
+          </form>
+        </div>
+        <div class="glass rounded-3xl p-6 sm:p-8">
+          <h3 class="text-lg font-semibold">บันทึกล่าสุด</h3>
+          <div id="reflectionList" class="scrollbar-thin mt-4 max-h-[560px] space-y-3 overflow-y-auto pr-1"></div>
+        </div>
+      </div>
+    </section>
 
+    <!-- Dashboard -->
+    <section id="tab-dashboard" class="tab-panel fade-in hidden">
+      <div class="grid gap-6 lg:grid-cols-2">
+        <div class="glass rounded-3xl p-6 sm:p-8">
+          <h2 class="text-xl font-bold">Dashboard ความก้าวหน้า</h2>
+          <div id="dashBars" class="mt-6 space-y-5"></div>
+          <div id="dashAssessment" class="mt-6"></div>
+        </div>
+        <div class="glass rounded-3xl p-6 sm:p-8">
+          <h2 class="text-xl font-bold">Growth Checklist</h2>
+          <p class="mt-1 text-sm text-slate-300">ติ๊กพฤติกรรมที่คุณทำได้แล้วในสัปดาห์นี้</p>
+          <div id="checklist" class="mt-5 space-y-2"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Prompts -->
+    <section id="tab-prompts" class="tab-panel fade-in hidden">
+      <div class="glass rounded-3xl p-6 sm:p-8">
+        <h2 class="text-xl font-bold">Prompt Library สำหรับฝึก Growth Mindset กับ AI</h2>
+        <p class="mt-1 text-slate-300">กดคัดลอก Prompt แล้วนำไปใช้กับ AI เพื่อฝึกตนเอง ทีม หรือองค์กร</p>
+        <div id="promptFilter" class="no-print mt-5 flex flex-wrap gap-2"></div>
+        <div id="promptGrid" class="mt-5 grid gap-4 md:grid-cols-2"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer class="mt-10 text-center text-xs text-slate-400">
+    สรุปแนวคิดจากหนังสือ <em>Mindset: The New Psychology of Success</em> — Carol S. Dweck · ข้อมูลของคุณถูกเก็บไว้ในเบราว์เซอร์นี้เท่านั้น
+  </footer>
+</div>
+
+<!-- Toast -->
+<div id="toast" class="no-print pointer-events-none fixed bottom-6 left-1/2 z-50 -translate-x-1/2 rounded-xl bg-slate-900/90 px-5 py-3 text-sm opacity-0 shadow-xl transition-opacity"></div>
+
+<script>
+/* ================= DATA ================= */
+const LESSONS = [
+  {
+    icon: '🧠', title: 'Mindset สองแบบ',
+    summary: 'ความเชื่อพื้นฐานเกี่ยวกับความสามารถของตัวเอง กำหนดวิธีที่เราเผชิญโลก',
+    points: [
+      '<b>Fixed Mindset</b> เชื่อว่าความฉลาดและพรสวรรค์เป็นสิ่งตายตัว มีมาเท่าไรก็เท่านั้น',
+      '<b>Growth Mindset</b> เชื่อว่าความสามารถพัฒนาได้ผ่านความพยายาม กลยุทธ์ที่ดี และความช่วยเหลือจากผู้อื่น',
+      'ทุกคนมีทั้งสองแบบผสมกัน และเปลี่ยนไปตามสถานการณ์ — สิ่งสำคัญคือการรู้ตัว',
+      'Growth Mindset ไม่ได้แปลว่า “ใครก็เป็นไอน์สไตน์ได้” แต่แปลว่า “ศักยภาพจริงของเราไม่มีใครรู้ล่วงหน้า”'
+    ],
+    quote: 'ความเชื่อว่าคุณพัฒนาได้ คือจุดเริ่มต้นของการพัฒนาจริง',
+    action: 'เขียนสิ่งที่คุณเคยพูดกับตัวเองว่า “ฉันไม่เก่งเรื่องนี้” มา 3 เรื่อง แล้วเติมคำว่า “…ยัง” ต่อท้ายทุกประโยค'
+  },
+  {
+    icon: '🔍', title: 'เบื้องหลังความสามารถ',
+    summary: 'พรสวรรค์เป็นเพียงจุดเริ่มต้น ความสำเร็จเกิดจากการฝึกฝนอย่างตั้งใจ',
+    points: [
+      'คนที่ประสบความสำเร็จหลายคนไม่ได้โดดเด่นตั้งแต่เด็ก แต่พัฒนาอย่างต่อเนื่อง',
+      'Fixed Mindset มองว่า “ถ้าต้องพยายาม แปลว่าไม่เก่ง” — Growth Mindset มองว่า “ความพยายามคือสิ่งที่ทำให้เก่ง”',
+      'การทดสอบวัดได้แค่ความสามารถ “ตอนนี้” ไม่ได้วัดว่าคุณจะไปได้ไกลแค่ไหน',
+      'ป้ายว่า “เด็กเก่ง” อาจทำให้คนกลัวความท้าทาย เพราะกลัวเสียป้ายนั้นไป'
+    ],
+    quote: 'ความพยายามไม่ใช่หลักฐานว่าคุณไม่เก่ง แต่คือเส้นทางสู่ความเก่ง',
+    action: 'เลือกทักษะ 1 อย่างที่คุณเก่งในวันนี้ แล้วย้อนนึกว่ากว่าจะเก่งได้ คุณผ่านการฝึกอะไรมาบ้าง'
+  },
+  {
+    icon: '🏆', title: 'ความสำเร็จและความล้มเหลว',
+    summary: 'วิธีตีความความล้มเหลว เป็นตัวแบ่งระหว่างคนที่หยุดกับคนที่ไปต่อ',
+    points: [
+      'Fixed Mindset: ความล้มเหลวคือตัวตน (“ฉันคือคนล้มเหลว”)',
+      'Growth Mindset: ความล้มเหลวคือเหตุการณ์ (“ฉันล้มเหลวในครั้งนี้ และเรียนรู้อะไรได้บ้าง”)',
+      'คน Fixed Mindset มักโทษคนอื่น หาข้ออ้าง หรือเลิกพยายามเพื่อปกป้องอีโก้',
+      'คน Growth Mindset ถามว่า “ครั้งหน้าจะทำอะไรต่างออกไป?”'
+    ],
+    quote: 'ความล้มเหลวคือข้อมูล ไม่ใช่คำตัดสิน',
+    action: 'นึกถึงความผิดพลาดล่าสุด 1 ครั้ง แล้วเขียนว่า “สิ่งที่ฉันเรียนรู้คือ…” และ “ครั้งหน้าฉันจะ…”'
+  },
+  {
+    icon: '⚽', title: 'กีฬาและ Mindset ของแชมป์',
+    summary: 'นักกีฬาระดับตำนานโดดเด่นที่ทัศนคติต่อการฝึกฝน ไม่ใช่แค่พรสวรรค์',
+    points: [
+      '“ตัวละคร” (character) สร้างจากการผ่านความยากลำบาก ไม่ใช่มีมาแต่กำเนิด',
+      'แชมป์ตัวจริงวัดความสำเร็จจากการทำเต็มที่และพัฒนาตัวเอง ไม่ใช่แค่ชัยชนะ',
+      'นักกีฬา Fixed Mindset มักพังเมื่อเจอคู่แข่งที่เก่งกว่า เพราะกลัวถูกเปิดโปงว่าไม่เก่งจริง',
+      'ความรับผิดชอบต่อผลงานของตัวเอง คือคุณสมบัติร่วมของแชมป์'
+    ],
+    quote: 'แชมป์ไม่ได้ไม่เคยแพ้ แต่ใช้ทุกความพ่ายแพ้เป็นบันไดขั้นต่อไป',
+    action: 'ตั้งเป้าหมายแบบ “กระบวนการ” 1 ข้อ (เช่น ฝึก 20 นาทีทุกวัน) แทนเป้าหมายแบบผลลัพธ์อย่างเดียว'
+  },
+  {
+    icon: '💼', title: 'ธุรกิจและภาวะผู้นำ',
+    summary: 'ผู้นำ Growth Mindset สร้างองค์กรที่เรียนรู้ ผู้นำ Fixed Mindset สร้างองค์กรที่กลัว',
+    points: [
+      'ผู้นำ Fixed Mindset ต้องการพิสูจน์ว่าตัวเองเก่งที่สุด ล้อมรอบตัวด้วยคนที่ไม่กล้าแย้ง',
+      'ผู้นำ Growth Mindset จ้างคนที่เก่งกว่าตัวเอง ยอมรับข้อผิดพลาด และเปิดรับฟีดแบ็ก',
+      '“Groupthink” เกิดง่ายในองค์กรที่ลงโทษความเห็นต่าง',
+      'องค์กรที่ให้คุณค่ากับการเรียนรู้ จะกล้าทดลองและปรับตัวได้เร็วกว่า'
+    ],
+    quote: 'ผู้นำที่ดีไม่ได้ต้องเป็นคนที่ฉลาดที่สุดในห้อง แต่ต้องเป็นคนที่เรียนรู้มากที่สุด',
+    action: 'ขอฟีดแบ็กจากเพื่อนร่วมงาน 1 คนด้วยคำถาม “มีอะไร 1 อย่างที่ฉันทำได้ดีขึ้นอีกไหม?” แล้วตอบแค่ “ขอบคุณ”'
+  },
+  {
+    icon: '❤️', title: 'ความสัมพันธ์',
+    summary: 'Mindset ส่งผลต่อวิธีที่เรารัก ให้อภัย และแก้ปัญหากับคนใกล้ตัว',
+    points: [
+      'Fixed Mindset เชื่อว่าความสัมพันธ์ที่ “ใช่” ต้องไม่ต้องพยายาม ถ้ามีปัญหาแปลว่าไม่เหมาะกัน',
+      'Growth Mindset เชื่อว่าความสัมพันธ์ที่ดีต้องสร้างด้วยการสื่อสารและการเติบโตร่วมกัน',
+      'ปัญหาไม่ได้บ่งบอกถึงข้อบกพร่องของนิสัย แต่เป็นโอกาสทำความเข้าใจกันมากขึ้น',
+      'ระวังการโยนความผิดแบบ “เธอเป็นคนแบบนี้” ซึ่งเป็นการตัดสินตัวตนถาวร'
+    ],
+    quote: 'ความสัมพันธ์ที่ดีไม่ได้ถูกค้นพบ แต่ถูกสร้างขึ้น',
+    action: 'เปลี่ยนประโยคตำหนิ 1 ประโยค จาก “เธอเป็นคน…” เป็น “ครั้งนี้เรื่อง… ทำให้ฉันรู้สึก… เราลองแก้ด้วยกันไหม?”'
+  },
+  {
+    icon: '👨‍👩‍👧', title: 'พ่อแม่ ครู และโค้ช',
+    summary: 'คำชมที่ถูกวิธีสร้าง Growth Mindset คำชมที่ผิดวิธีสร้าง Fixed Mindset',
+    points: [
+      'ชม “ความฉลาด” (“เก่งจัง”) ทำให้เด็กเลือกงานง่ายเพื่อรักษาภาพลักษณ์',
+      'ชม “กระบวนการ” (ความพยายาม กลยุทธ์ ความมุ่งมั่น) ทำให้เด็กกล้ารับความท้าทาย',
+      'ครูที่ยอดเยี่ยมตั้งมาตรฐานสูง พร้อมสร้างบรรยากาศที่ปลอดภัยในการผิดพลาด',
+      'ข้อความที่ผู้ใหญ่ส่งออกไปโดยไม่ตั้งใจ ก็หล่อหลอม Mindset ของเด็กได้'
+    ],
+    quote: 'ชมที่ความพยายามและวิธีคิด ไม่ใช่ที่พรสวรรค์',
+    action: 'วันนี้ชมใครสักคน 1 ครั้งแบบเจาะจงกระบวนการ เช่น “ชอบที่เธอลองหลายวิธีจนเจอคำตอบ”'
+  },
+  {
+    icon: '🔄', title: 'การเปลี่ยน Mindset',
+    summary: 'Mindset เปลี่ยนได้ ด้วยการรู้ตัว ตั้งชื่อ และเลือกตอบสนองใหม่',
+    points: [
+      '<b>1. รู้ตัว</b> — สังเกตเสียงในหัวที่บอกว่า “อย่าเสี่ยงเลย เดี๋ยวดูโง่”',
+      '<b>2. ตั้งชื่อ</b> — ให้ชื่อตัวตน Fixed Mindset ของคุณ เพื่อแยกมันออกจากตัวคุณ',
+      '<b>3. ตอบกลับ</b> — คุยกับมันด้วยเสียงแบบ Growth Mindset',
+      '<b>4. ลงมือ</b> — เลือกการกระทำแบบ Growth แล้วทำซ้ำจนเป็นนิสัย',
+      'การเปลี่ยนไม่ใช่ครั้งเดียวจบ แต่เป็นการเดินทางที่ต้องฝึกทุกวัน'
+    ],
+    quote: 'การเปลี่ยน Mindset ไม่ใช่การเลือกครั้งเดียว แต่เป็นการเลือกซ้ำทุกวัน',
+    action: 'ตั้งชื่อตัวตน Fixed Mindset ของคุณ (เช่น “นายกลัวพลาด”) และเขียนว่ามันมักโผล่มาเมื่อไร'
+  }
+];
+
+const ASSESSMENT = [
+  { q: 'ความฉลาดเป็นสิ่งที่ติดตัวมา และเปลี่ยนแปลงได้น้อยมาก', fixed: true },
+  { q: 'ฉันสามารถเรียนรู้สิ่งใหม่ได้เสมอ ไม่ว่าจะเริ่มจากจุดไหน', fixed: false },
+  { q: 'ถ้าต้องพยายามมากกับอะไรสักอย่าง แปลว่าฉันไม่มีพรสวรรค์ด้านนั้น', fixed: true },
+  { q: 'ฉันชอบงานที่ท้าทาย แม้อาจทำพลาด', fixed: false },
+  { q: 'เมื่อถูกวิจารณ์ ฉันรู้สึกว่าถูกโจมตีตัวตน', fixed: true },
+  { q: 'ฟีดแบ็กเชิงลบเป็นข้อมูลที่มีค่าสำหรับการพัฒนา', fixed: false },
+  { q: 'ความสำเร็จของคนอื่นทำให้ฉันรู้สึกด้อยค่า', fixed: true },
+  { q: 'ฉันได้แรงบันดาลใจจากความสำเร็จของคนอื่น', fixed: false },
+  { q: 'ฉันมักหลีกเลี่ยงสิ่งที่อาจทำให้ดูไม่เก่ง', fixed: true },
+  { q: 'เมื่อเจออุปสรรค ฉันมองหาวิธีใหม่แทนการยอมแพ้', fixed: false }
+];
+
+const SCENARIOS = [
+  {
+    s: 'คุณสอบได้คะแนนต่ำกว่าที่คาดไว้มาก คุณคิดว่า…',
+    c: [
+      { t: 'ฉันคงไม่ถนัดวิชานี้ตั้งแต่แรก', ok: false, f: 'นี่คือการมองความสามารถว่าตายตัว ลองมองคะแนนเป็นข้อมูลว่าต้องปรับอะไร' },
+      { t: 'ข้อสอบยากเกินไป ครูออกไม่ยุติธรรม', ok: false, f: 'การโทษปัจจัยภายนอกช่วยปกป้องอีโก้ แต่ไม่ช่วยให้พัฒนา' },
+      { t: 'วิธีอ่านของฉันยังไม่ได้ผล ลองดูว่าผิดตรงไหนแล้วปรับกลยุทธ์', ok: true, f: 'ยอดเยี่ยม! คุณแยก “ผลลัพธ์” ออกจาก “ตัวตน” และโฟกัสที่กลยุทธ์' }
+    ]
+  },
+  {
+    s: 'หัวหน้าเสนองานโปรเจกต์ใหม่ที่คุณไม่เคยทำมาก่อน คุณจะ…',
+    c: [
+      { t: 'รับไว้ และวางแผนว่าต้องเรียนรู้อะไรเพิ่ม', ok: true, f: 'ถูกต้อง! ความท้าทายคือโอกาสขยายขีดความสามารถ' },
+      { t: 'ปฏิเสธ เพราะกลัวทำออกมาไม่ดีแล้วเสียภาพลักษณ์', ok: false, f: 'Fixed Mindset มักเลือกความปลอดภัยเพื่อรักษาภาพ “คนเก่ง”' },
+      { t: 'รับไว้ แต่ถ้าพลาดจะบอกว่าไม่ได้ตั้งใจทำเต็มที่', ok: false, f: 'การเตรียมข้ออ้างล่วงหน้า (self-handicapping) เป็นกลไกของ Fixed Mindset' }
+    ]
+  },
+  {
+    s: 'เพื่อนร่วมงานได้รับการเลื่อนตำแหน่งก่อนคุณ คุณรู้สึก…',
+    c: [
+      { t: 'เขาคงโชคดี หรือเอาใจหัวหน้าเก่ง', ok: false, f: 'การลดคุณค่าความสำเร็จของคนอื่นเป็นสัญญาณของ Fixed Mindset' },
+      { t: 'ยินดีด้วย และอยากรู้ว่าเขาพัฒนาตัวเองอย่างไร', ok: true, f: 'เยี่ยม! ความสำเร็จของคนอื่นคือบทเรียนและแรงบันดาลใจ' },
+      { t: 'แปลว่าฉันไม่เก่งพอ คงไปได้แค่นี้', ok: false, f: 'การเปรียบเทียบแล้วตัดสินตัวเองถาวร ทำให้หยุดพัฒนา' }
+    ]
+  },
+  {
+    s: 'ลูกกลับมาบอกว่า “หนูโง่คณิตศาสตร์” คุณตอบว่า…',
+    c: [
+      { t: 'ไม่เป็นไร แม่/พ่อก็ไม่เก่งเลข มันเป็นกรรมพันธุ์', ok: false, f: 'ประโยคนี้ตอกย้ำว่าความสามารถตายตัวและถ่ายทอดทางพันธุกรรม' },
+      { t: 'ไม่จริงหรอก ลูกฉลาดมาก', ok: false, f: 'การชมความฉลาดไม่ช่วยเมื่อเด็กเจอความยาก และอาจทำให้กลัวพลาดมากขึ้น' },
+      { t: 'ลูก “ยัง” ไม่เข้าใจเรื่องนี้ มาลองหาวิธีใหม่ด้วยกันไหม', ok: true, f: 'ถูกต้อง! คำว่า “ยัง” เปิดประตูสู่การพัฒนา' }
+    ]
+  },
+  {
+    s: 'คุณได้รับฟีดแบ็กว่างานนำเสนอ “ยังไม่ชัดเจน” คุณจะ…',
+    c: [
+      { t: 'ถามต่อว่าส่วนไหนไม่ชัด และมีตัวอย่างที่ดีไหม', ok: true, f: 'ยอดเยี่ยม! การขอรายละเอียดเพิ่มทำให้ฟีดแบ็กมีประโยชน์จริง' },
+      { t: 'อธิบายว่าทำไมทำแบบนั้น เพื่อให้เขาเข้าใจว่าคุณถูก', ok: false, f: 'การตั้งรับทันทีปิดโอกาสการเรียนรู้' },
+      { t: 'รู้สึกแย่ทั้งวัน และคิดว่าตัวเองไม่เหมาะกับการพูด', ok: false, f: 'ฟีดแบ็กต่องานไม่ใช่การตัดสินตัวตนของคุณ' }
+    ]
+  },
+  {
+    s: 'คุณเริ่มเรียนกีตาร์มา 2 สัปดาห์ แต่นิ้วยังกดคอร์ดไม่ได้ คุณ…',
+    c: [
+      { t: 'เลิกดีกว่า คนที่มีพรสวรรค์คงเล่นได้ตั้งแต่สัปดาห์แรก', ok: false, f: 'ความเชื่อว่า “เก่งจริงต้องง่าย” คือกับดักของ Fixed Mindset' },
+      { t: 'แบ่งฝึกคอร์ดทีละตัววันละ 15 นาที และบันทึกความคืบหน้า', ok: true, f: 'เยี่ยม! การฝึกอย่างตั้งใจและวัดผลเล็ก ๆ คือหัวใจของการเติบโต' },
+      { t: 'ซื้อกีตาร์ตัวใหม่ที่แพงกว่า น่าจะเล่นง่ายขึ้น', ok: false, f: 'อุปกรณ์ช่วยได้บ้าง แต่ไม่ได้แทนที่การฝึกฝน' }
+    ]
+  },
+  {
+    s: 'ในที่ประชุม ลูกทีมชี้ว่าแผนของคุณมีจุดอ่อน คุณในฐานะหัวหน้า…',
+    c: [
+      { t: 'ขอบคุณ และชวนทีมช่วยกันปรับแผน', ok: true, f: 'ถูกต้อง! ผู้นำ Growth Mindset สร้างพื้นที่ปลอดภัยให้คนกล้าพูด' },
+      { t: 'ตอบว่าคุณมีประสบการณ์มากกว่า ให้ทำตามแผนเดิม', ok: false, f: 'การใช้อำนาจปิดความเห็นต่างนำไปสู่ Groupthink' },
+      { t: 'เงียบไว้ แต่จดจำว่าคนนี้ไม่ให้เกียรติ', ok: false, f: 'การมองความเห็นต่างเป็นภัยคุกคามทำลายวัฒนธรรมการเรียนรู้' }
+    ]
+  },
+  {
+    s: 'คุณทะเลาะกับคนรักเรื่องเดิมเป็นครั้งที่ 3 คุณคิดว่า…',
+    c: [
+      { t: 'เราคงไม่เหมาะกันตั้งแต่แรก', ok: false, f: 'Fixed Mindset มองว่าปัญหาคือหลักฐานว่า “ไม่ใช่”' },
+      { t: 'เขาเป็นคนแบบนี้ เปลี่ยนไม่ได้หรอก', ok: false, f: 'การตัดสินนิสัยถาวรทำให้ไม่มีทางออก' },
+      { t: 'เรื่องนี้สำคัญกับเราทั้งคู่ ลองคุยหาวิธีใหม่ที่ยังไม่เคยลอง', ok: true, f: 'เยี่ยม! ความสัมพันธ์ที่ดีสร้างจากการเรียนรู้ร่วมกัน' }
+    ]
+  }
+];
+
+const WORKSHOP = [
+  'เขียนประโยค “ฉันทำไม่ได้” 3 ข้อ แล้วเติมคำว่า “ยัง”',
+  'สังเกตเสียง Fixed Mindset ในหัว 1 ครั้ง และจดไว้',
+  'ตั้งชื่อตัวตน Fixed Mindset ของคุณ',
+  'เรียนรู้สิ่งใหม่ 15 นาที ในเรื่องที่ไม่ถนัด',
+  'ชมใครสักคนที่ความพยายาม ไม่ใช่พรสวรรค์',
+  'ขอฟีดแบ็กจากคน 1 คน แล้วตอบแค่ “ขอบคุณ”',
+  'ทบทวนสัปดาห์แรก: อะไรเปลี่ยนไปบ้าง?',
+  'ลองทำสิ่งที่กลัวพลาด 1 อย่าง (เล็ก ๆ ก็ได้)',
+  'เขียนความผิดพลาด 1 เรื่อง และบทเรียนที่ได้',
+  'อ่านเรื่องราวของคนที่ล้มเหลวก่อนสำเร็จ',
+  'ตั้งเป้าหมายแบบกระบวนการ 1 ข้อสำหรับสัปดาห์นี้',
+  'ยินดีกับความสำเร็จของคนอื่นอย่างจริงใจ 1 ครั้ง',
+  'ถามคำถามในที่ประชุม/ห้องเรียน แม้กลัวดูไม่รู้',
+  'ทบทวนสัปดาห์ที่สอง: ความท้าทายที่ผ่านมาได้',
+  'สอนสิ่งที่เพิ่งเรียนรู้ให้คนอื่นฟัง',
+  'เปลี่ยนคำตำหนิตัวเอง 1 ครั้งเป็นคำให้กำลังใจ',
+  'ฝึกทักษะหนึ่งอย่างตั้งใจ 30 นาที (Deliberate Practice)',
+  'ขอคำแนะนำจากคนที่เก่งกว่าในเรื่องที่อยากพัฒนา',
+  'ลองวิธีใหม่กับปัญหาเดิมที่ค้างคา',
+  'บันทึกช่วงเวลาที่คุณ “เกือบยอมแพ้” แต่ไปต่อ',
+  'ทบทวนสัปดาห์ที่สาม: คุณภูมิใจกับอะไร?',
+  'แบ่งเป้าหมายใหญ่เป็นขั้นเล็ก ๆ 5 ขั้น',
+  'ฟังคำวิจารณ์โดยไม่แก้ตัวตลอดบทสนทนา',
+  'ชวนเพื่อน/ทีมคุยเรื่อง Growth Mindset',
+  'เปลี่ยนคำถาม “ทำไมต้องเป็นฉัน?” เป็น “ฉันเรียนรู้อะไรได้?”',
+  'ทำสิ่งที่ยากขึ้นกว่าเมื่อวาน 1 ระดับ',
+  'เขียนจดหมายถึงตัวเองในอีก 1 ปี',
+  'ทบทวนสัปดาห์ที่สี่: นิสัยใหม่ที่เกิดขึ้น',
+  'วางแผนการเติบโตสำหรับ 3 เดือนข้างหน้า',
+  'ฉลองการเดินทาง 30 วัน และเขียนสิ่งที่เปลี่ยนไป'
+];
+
+const CHECKLIST = [
+  'ฉันรับความท้าทายใหม่อย่างน้อย 1 อย่าง',
+  'ฉันใช้คำว่า “ยัง” แทน “ไม่ได้”',
+  'ฉันขอและรับฟีดแบ็กโดยไม่ตั้งรับ',
+  'ฉันเรียนรู้จากความผิดพลาดแทนการโทษตัวเอง',
+  'ฉันชมคนอื่นที่ความพยายาม',
+  'ฉันยินดีกับความสำเร็จของคนอื่น',
+  'ฉันลองกลยุทธ์ใหม่เมื่อวิธีเดิมไม่ได้ผล',
+  'ฉันฝึกฝนสิ่งที่อยากพัฒนาอย่างสม่ำเสมอ'
+];
+
+const PROMPTS = [
+  { cat: 'ตนเอง', title: 'แปลงความคิด Fixed เป็น Growth', text: 'ช่วยฉันเปลี่ยนความคิดแบบ Fixed Mindset ต่อไปนี้ให้เป็น Growth Mindset พร้อมอธิบายเหตุผลและเสนอการกระทำเล็ก ๆ 1 อย่างที่ฉันทำได้วันนี้: "[ใส่ความคิดของคุณ]"' },
+  { cat: 'ตนเอง', title: 'โค้ชหลังความผิดพลาด', text: 'ทำตัวเป็นโค้ช Growth Mindset ถามคำถามฉันทีละข้อ (ไม่เกิน 5 ข้อ) เพื่อช่วยให้ฉันเรียนรู้จากความผิดพลาดนี้โดยไม่โทษตัวเอง: [เล่าเหตุการณ์]' },
+  { cat: 'ตนเอง', title: 'แผนฝึกทักษะแบบตั้งใจ', text: 'ฉันต้องการพัฒนาทักษะ [ชื่อทักษะ] ตอนนี้อยู่ระดับ [ระดับปัจจุบัน] มีเวลาวันละ [นาที] ช่วยวางแผน Deliberate Practice 4 สัปดาห์ พร้อมตัวชี้วัดความคืบหน้ารายสัปดาห์' },
+  { cat: 'ตนเอง', title: 'สะท้อนคิดประจำวัน', text: 'ช่วยสรุป Reflection ของฉันวันนี้ ชี้ให้เห็นว่ามีร่องรอย Fixed หรือ Growth Mindset ตรงไหน และแนะนำสิ่งที่ควรลองพรุ่งนี้: [วางบันทึกของคุณ]' },
+  { cat: 'ทีม', title: 'ออกแบบประชุม Retrospective', text: 'ออกแบบกิจกรรม Retrospective 45 นาทีสำหรับทีม [จำนวน] คน ที่ส่งเสริม Growth Mindset ให้ทีมกล้าพูดถึงความผิดพลาดโดยไม่กล่าวโทษ พร้อมคำถามนำและกติกา' },
+  { cat: 'ทีม', title: 'ให้ฟีดแบ็กแบบ Growth', text: 'ช่วยเขียนฟีดแบ็กให้ลูกทีมของฉันแบบ Growth Mindset โดยชมที่กระบวนการ ชี้จุดพัฒนาอย่างเจาะจง และจบด้วยคำถามชวนคิด สถานการณ์คือ: [อธิบาย]' },
+  { cat: 'ทีม', title: 'เกมละลายพฤติกรรม', text: 'เสนอกิจกรรม Ice-breaker 3 แบบ ใช้เวลาไม่เกิน 10 นาที ที่ช่วยให้ทีมเข้าใจความต่างระหว่าง Fixed และ Growth Mindset' },
+  { cat: 'องค์กร', title: 'ประเมินวัฒนธรรมองค์กร', text: 'สร้างแบบสอบถาม 15 ข้อ (สเกล 1-5) เพื่อประเมินว่าองค์กรของเรามีวัฒนธรรม Growth หรือ Fixed Mindset พร้อมวิธีแปลผลและข้อเสนอแนะตามช่วงคะแนน' },
+  { cat: 'องค์กร', title: 'แผนพัฒนาผู้นำ', text: 'ออกแบบหลักสูตรพัฒนาผู้นำ 8 สัปดาห์ เน้น Growth Mindset สำหรับหัวหน้างานระดับกลาง ระบุหัวข้อ กิจกรรม และผลลัพธ์ที่วัดได้ของแต่ละสัปดาห์' },
+  { cat: 'ครอบครัว/การศึกษา', title: 'คำชมที่สร้าง Growth', text: 'ให้ตัวอย่างคำชมแบบ Growth Mindset 10 ประโยค สำหรับ [เด็ก/นักเรียน] อายุ [อายุ] ในสถานการณ์ [ทำการบ้าน/เล่นกีฬา/สอบ] เปรียบเทียบกับคำชมแบบ Fixed' },
+  { cat: 'ครอบครัว/การศึกษา', title: 'แผนการสอนในห้องเรียน', text: 'สร้างแผนการสอน 50 นาทีเรื่อง Growth Mindset สำหรับนักเรียนชั้น [ระดับชั้น] มีกิจกรรมลงมือทำ คำถามอภิปราย และใบงานสั้น' },
+  { cat: 'ครอบครัว/การศึกษา', title: 'คุยกับลูกเมื่อผิดหวัง', text: 'ลูกของฉันอายุ [อายุ] รู้สึกผิดหวังเพราะ [เหตุการณ์] ช่วยแนะนำบทสนทนาแบบ Growth Mindset ที่ฉันใช้คุยกับลูกได้ ทั้งประโยคเปิดและคำถามชวนคิด' }
+];
+
+const MOODS = ['😞', '😕', '😐', '🙂', '😄'];
+
+/* ================= STATE ================= */
+const STORE_KEY = 'mindset-app-v1';
+const defaultState = () => ({
+  currentLesson: 0,
+  lessonsDone: [],
+  answers: {},
+  assessment: null,
+  game: { idx: 0, score: 0, answered: null, best: 0, finished: false },
+  workshop: [],
+  reflections: [],
+  checklist: [],
+  tab: 'lessons'
+});
+let state = load();
+
+function load() {
+  try {
+    const raw = localStorage.getItem(STORE_KEY);
+    if (raw) return Object.assign(defaultState(), JSON.parse(raw));
+  } catch (e) {}
+  return defaultState();
+}
+function save() {
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); } catch (e) {}
+  renderHeader();
+}
+
+/* ================= HELPERS ================= */
+const $ = (s) => document.querySelector(s);
+const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+function toast(msg) {
+  const t = $('#toast');
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(toast._t);
+  toast._t = setTimeout(() => (t.style.opacity = '0'), 2000);
+}
+function overallProgress() {
+  const l = state.lessonsDone.length / LESSONS.length * 40;
+  const w = state.workshop.length / WORKSHOP.length * 30;
+  const a = state.assessment ? 10 : 0;
+  const g = state.game.finished ? 10 : 0;
+  const r = Math.min(state.reflections.length, 5) / 5 * 10;
+  return Math.round(l + w + a + g + r);
+}
+
+/* ================= HEADER ================= */
+function renderHeader() {
+  const p = overallProgress();
+  $('#progressText').textContent = p + '%';
+  $('#progressBar').style.width = p + '%';
+  $('#statLessons').textContent = `${state.lessonsDone.length}/${LESSONS.length}`;
+  $('#statReflections').textContent = `${state.reflections.length} ครั้ง`;
+  $('#statWorkshop').textContent = `${state.workshop.length}/${WORKSHOP.length}`;
+}
+
+/* ================= TABS ================= */
+function showTab(name) {
+  state.tab = name;
+  document.querySelectorAll('.tab-btn').forEach((b) => b.classList.toggle('active', b.dataset.tab === name));
+  document.querySelectorAll('.tab-panel').forEach((p) => p.classList.toggle('hidden', p.id !== 'tab-' + name));
+  if (name === 'dashboard') renderDashboard();
+  save();
+}
+$('#tabs').addEventListener('click', (e) => {
+  const b = e.target.closest('.tab-btn');
+  if (b) showTab(b.dataset.tab);
+});
+
+/* ================= LESSONS ================= */
+function renderLessons() {
+  $('#lessonList').innerHTML = LESSONS.map((l, i) => {
+    const done = state.lessonsDone.includes(i);
+    const active = i === state.currentLesson;
+    return `<li><button data-i="${i}" class="flex w-full items-center gap-3 rounded-xl px-3 py-2.5 text-left text-sm transition ${active ? 'bg-white/20 font-semibold' : 'hover:bg-white/10'}">
+      <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg ${done ? 'bg-emerald-400 text-slate-900' : 'bg-white/10'}">${done ? '✓' : i + 1}</span>
+      <span>${l.icon} ${l.title}</span></button></li>`;
+  }).join('');
+
+  const i = state.currentLesson, l = LESSONS[i], done = state.lessonsDone.includes(i);
+  $('#lessonView').innerHTML = `
+    <div class="fade-in">
+      <p class="text-sm font-medium uppercase tracking-wider text-violet-300">Lesson ${i + 1} / ${LESSONS.length}</p>
+      <h2 class="mt-1 text-2xl font-bold sm:text-3xl">${l.icon} ${l.title}</h2>
+      <p class="mt-2 text-lg text-slate-300">${l.summary}</p>
+      <ul class="mt-6 space-y-3">${l.points.map((p) => `<li class="flex gap-3 rounded-2xl bg-white/5 p-4 leading-relaxed"><span class="text-emerald-300">▹</span><span>${p}</span></li>`).join('')}</ul>
+      <blockquote class="mt-6 rounded-2xl border-l-4 border-violet-400 bg-violet-500/10 p-4 italic text-violet-100">“${l.quote}”</blockquote>
+      <div class="mt-6 rounded-2xl border border-emerald-300/30 bg-emerald-500/10 p-5">
+        <h3 class="font-semibold text-emerald-200">🎯 Mini Action</h3>
+        <p class="mt-2 leading-relaxed">${l.action}</p>
+      </div>
+      <div class="no-print mt-6 flex flex-wrap items-center gap-3">
+        <button id="btnPrev" class="rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 transition hover:bg-white/20 disabled:opacity-40" ${i === 0 ? 'disabled' : ''}>← ก่อนหน้า</button>
+        <button id="btnDone" class="rounded-xl px-5 py-2.5 font-semibold shadow-lg transition ${done ? 'bg-emerald-400 text-slate-900' : 'bg-gradient-to-r from-violet-500 to-emerald-500 hover:opacity-90'}">${done ? '✓ เรียนจบแล้ว (กดเพื่อยกเลิก)' : 'ทำบทเรียนนี้เสร็จแล้ว'}</button>
+        <button id="btnNext" class="rounded-xl border border-white/20 bg-white/10 px-4 py-2.5 transition hover:bg-white/20 disabled:opacity-40" ${i === LESSONS.length - 1 ? 'disabled' : ''}>ถัดไป →</button>
+      </div>
+    </div>`;
+  $('#btnPrev').onclick = () => { state.currentLesson--; save(); renderLessons(); };
+  $('#btnNext').onclick = () => { state.currentLesson++; save(); renderLessons(); };
+  $('#btnDone').onclick = () => {
+    if (done) state.lessonsDone = state.lessonsDone.filter((x) => x !== i);
+    else {
+      state.lessonsDone.push(i);
+      toast('🎉 ยอดเยี่ยม! จบบทเรียนแล้ว');
+      if (i < LESSONS.length - 1) state.currentLesson++;
+    }
+    save(); renderLessons();
+  };
+}
+$('#lessonList').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-i]');
+  if (b) { state.currentLesson = +b.dataset.i; save(); renderLessons(); }
+});
+
+/* ================= ASSESSMENT ================= */
+function renderAssessment() {
+  $('#assessmentForm').innerHTML = ASSESSMENT.map((a, i) => `
+    <div class="rounded-2xl bg-white/5 p-4">
+      <p class="font-medium">${i + 1}. ${a.q}</p>
+      <div class="mt-3 flex flex-wrap gap-2">
+        ${[1, 2, 3, 4, 5].map((v) => `
+          <label class="cursor-pointer">
+            <input type="radio" class="peer sr-only" name="q${i}" value="${v}" ${state.answers[i] == v ? 'checked' : ''}>
+            <span class="flex h-10 w-10 items-center justify-center rounded-xl border border-white/20 bg-white/5 font-semibold transition hover:bg-white/15">${v}</span>
+          </label>`).join('')}
+        <span class="ml-2 self-center text-xs text-slate-400">ไม่เห็นด้วย ← → เห็นด้วย</span>
+      </div>
+    </div>`).join('');
+  renderAssessmentResult();
+}
+$('#assessmentForm').addEventListener('change', (e) => {
+  if (e.target.name) { state.answers[e.target.name.slice(1)] = +e.target.value; save(); }
+});
+$('#btnAssess').onclick = () => {
+  const n = Object.keys(state.answers).length;
+  if (n < ASSESSMENT.length) { toast(`กรุณาตอบให้ครบ (ตอบแล้ว ${n}/${ASSESSMENT.length})`); return; }
+  let total = 0;
+  ASSESSMENT.forEach((a, i) => { const v = state.answers[i]; total += a.fixed ? 6 - v : v; });
+  const pct = Math.round((total - 10) / 40 * 100);
+  state.assessment = { pct, date: new Date().toISOString() };
+  save(); renderAssessmentResult();
+  toast('ประเมินผลเรียบร้อย');
+};
+$('#btnAssessClear').onclick = () => { state.answers = {}; save(); renderAssessment(); };
+
+function assessmentLabel(pct) {
+  if (pct >= 75) return { t: 'Growth Mindset เด่นชัด 🌳', c: 'text-emerald-300', d: 'คุณมองความท้าทายและความผิดพลาดเป็นโอกาสเรียนรู้ ลองเป็นแรงบันดาลใจและช่วยพัฒนาคนรอบข้างต่อไป' };
+  if (pct >= 50) return { t: 'กำลังเติบโต 🌿', c: 'text-sky-300', d: 'คุณมีแนวคิด Growth เป็นส่วนใหญ่ แต่บางสถานการณ์ Fixed Mindset ยังโผล่มา ลองสังเกตว่าเกิดขึ้นเมื่อไร' };
+  if (pct >= 25) return { t: 'ผสมผสาน 🌱', c: 'text-amber-300', d: 'ความเชื่อแบบ Fixed ยังมีอิทธิพลพอสมควร เริ่มจากบทเรียนที่ 1 และ Workshop 30 วันเพื่อฝึกทีละน้อย' };
+  return { t: 'Fixed Mindset เด่น 🪴', c: 'text-rose-300', d: 'ไม่ต้องกังวล! Mindset เปลี่ยนได้ การรู้ตัวคือก้าวแรก ลองทำ Mini Action ในแต่ละบทเรียนดู' };
+}
+function renderAssessmentResult() {
+  const a = state.assessment;
+  if (!a) { $('#assessmentResult').innerHTML = ''; return; }
+  const L = assessmentLabel(a.pct);
+  $('#assessmentResult').innerHTML = `
+    <div class="fade-in rounded-2xl border border-white/20 bg-white/10 p-6">
+      <p class="text-sm text-slate-300">ผลการประเมิน (${new Date(a.date).toLocaleDateString('th-TH')})</p>
+      <p class="mt-1 text-2xl font-bold ${L.c}">${L.t}</p>
+      <div class="mt-4 flex items-center gap-3 text-sm">
+        <span class="text-rose-300">Fixed</span>
+        <div class="relative h-3 flex-1 rounded-full bg-gradient-to-r from-rose-400 via-amber-300 to-emerald-400">
+          <div class="absolute -top-1.5 h-6 w-6 -translate-x-1/2 rounded-full border-4 border-white bg-slate-900 shadow" style="left:${a.pct}%"></div>
+        </div>
+        <span class="text-emerald-300">Growth</span>
+      </div>
+      <p class="mt-2 text-center text-3xl font-bold">${a.pct}%</p>
+      <p class="mt-3 leading-relaxed text-slate-200">${L.d}</p>
+    </div>`;
+}
+
+/* ================= GAME ================= */
+function renderGame() {
+  const g = state.game;
+  $('#gameScore').textContent = g.score;
+  $('#gameProgress').textContent = `สถานการณ์ ${Math.min(g.idx + 1, SCENARIOS.length)}/${SCENARIOS.length}`;
+  $('#gameBest').textContent = `คะแนนสูงสุด: ${g.best}/${SCENARIOS.length}`;
+
+  if (g.idx >= SCENARIOS.length) {
+    const pct = Math.round(g.score / SCENARIOS.length * 100);
+    $('#gameBox').innerHTML = `
+      <div class="fade-in rounded-2xl bg-white/10 p-8 text-center">
+        <p class="text-5xl">${pct >= 75 ? '🏆' : pct >= 50 ? '🌿' : '🌱'}</p>
+        <p class="mt-3 text-2xl font-bold">จบเกมแล้ว!</p>
+        <p class="mt-2 text-slate-300">คุณได้ ${g.score}/${SCENARIOS.length} คะแนน (${pct}%)</p>
+        <p class="mt-4 text-slate-300">ข้อที่ตอบผิดคือข้อมูลที่บอกว่า Mindset ไหนยังต้องฝึก — ไม่ใช่ความล้มเหลว</p>
+      </div>`;
+    return;
+  }
+  const sc = SCENARIOS[g.idx];
+  $('#gameBox').innerHTML = `
+    <div class="fade-in">
+      <div class="h-2 overflow-hidden rounded-full bg-white/10"><div class="h-full bg-violet-400 transition-all" style="width:${g.idx / SCENARIOS.length * 100}%"></div></div>
+      <p class="mt-5 text-lg font-semibold leading-relaxed">🎬 ${sc.s}</p>
+      <div class="mt-5 space-y-3">
+        ${sc.c.map((c, i) => {
+          let cls = 'border-white/20 bg-white/5 hover:bg-white/15';
+          if (g.answered !== null) {
+            if (c.ok) cls = 'border-emerald-300 bg-emerald-500/20';
+            else if (i === g.answered) cls = 'border-rose-300 bg-rose-500/20';
+            else cls = 'border-white/10 bg-white/5 opacity-60';
+          }
+          return `<button data-c="${i}" ${g.answered !== null ? 'disabled' : ''} class="w-full rounded-2xl border p-4 text-left transition ${cls}">${String.fromCharCode(65 + i)}. ${c.t}</button>`;
+        }).join('')}
+      </div>
+      ${g.answered !== null ? `
+        <div class="mt-5 rounded-2xl p-4 ${sc.c[g.answered].ok ? 'bg-emerald-500/15 text-emerald-100' : 'bg-amber-500/15 text-amber-100'}">
+          ${sc.c[g.answered].ok ? '✅' : '💡'} ${sc.c[g.answered].f}
+          ${!sc.c[g.answered].ok ? `<p class="mt-2 text-sm opacity-90">คำตอบแบบ Growth: ${sc.c.find((c) => c.ok).f}</p>` : ''}
+        </div>
+        <button id="btnNextScene" class="no-print mt-4 rounded-xl bg-gradient-to-r from-violet-500 to-emerald-500 px-6 py-2.5 font-semibold transition hover:opacity-90">${g.idx === SCENARIOS.length - 1 ? 'ดูผลลัพธ์' : 'สถานการณ์ถัดไป →'}</button>` : ''}
+    </div>`;
+  const nb = $('#btnNextScene');
+  if (nb) nb.onclick = () => {
+    g.idx++; g.answered = null;
+    if (g.idx >= SCENARIOS.length) { g.finished = true; g.best = Math.max(g.best, g.score); }
+    save(); renderGame();
+  };
+}
+$('#gameBox').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-c]');
+  const g = state.game;
+  if (!b || g.answered !== null) return;
+  g.answered = +b.dataset.c;
+  if (SCENARIOS[g.idx].c[g.answered].ok) g.score++;
+  save(); renderGame();
+});
+$('#btnGameRestart').onclick = () => {
+  Object.assign(state.game, { idx: 0, score: 0, answered: null });
+  save(); renderGame();
+};
+
+/* ================= WORKSHOP ================= */
+function renderWorkshop() {
+  $('#workshopCount').textContent = `ทำแล้ว ${state.workshop.length}/${WORKSHOP.length} วัน`;
+  $('#workshopGrid').innerHTML = WORKSHOP.map((t, i) => {
+    const done = state.workshop.includes(i);
+    return `<label class="flex cursor-pointer items-start gap-3 rounded-2xl border p-4 transition ${done ? 'border-emerald-300/50 bg-emerald-500/15' : 'border-white/15 bg-white/5 hover:bg-white/10'}">
+      <input type="checkbox" data-w="${i}" ${done ? 'checked' : ''} class="mt-1 h-5 w-5 shrink-0 accent-emerald-400">
+      <span><span class="block text-xs font-semibold uppercase tracking-wider ${done ? 'text-emerald-300' : 'text-violet-300'}">Day ${i + 1}</span>
+      <span class="${done ? 'text-slate-300 line-through decoration-emerald-300/60' : ''}">${t}</span></span></label>`;
+  }).join('');
+}
+$('#workshopGrid').addEventListener('change', (e) => {
+  const i = +e.target.dataset.w;
+  if (e.target.checked) { state.workshop.push(i); toast(`🔥 Day ${i + 1} สำเร็จ!`); }
+  else state.workshop = state.workshop.filter((x) => x !== i);
+  save(); renderWorkshop();
+});
+
+/* ================= REFLECTION ================= */
+let mood = 3;
+function renderMood() {
+  $('#moodPicker').innerHTML = MOODS.map((m, i) => `<button type="button" data-m="${i}" class="rounded-xl p-1.5 transition ${i === mood ? 'scale-110 bg-white/25' : 'opacity-50 hover:opacity-100'}">${m}</button>`).join('');
+}
+$('#moodPicker').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-m]');
+  if (b) { mood = +b.dataset.m; renderMood(); }
+});
+$('#reflectionForm').addEventListener('submit', (e) => {
+  e.preventDefault();
+  const f = new FormData(e.target);
+  state.reflections.unshift({
+    id: Date.now(),
+    date: new Date().toISOString(),
+    challenge: f.get('challenge').trim(),
+    learned: f.get('learned').trim(),
+    next: f.get('next').trim(),
+    mood
+  });
+  e.target.reset(); mood = 3; renderMood();
+  save(); renderReflections();
+  toast('✍️ บันทึก Reflection แล้ว');
+});
+function renderReflections() {
+  const list = state.reflections;
+  if (!list.length) {
+    $('#reflectionList').innerHTML = '<p class="rounded-2xl bg-white/5 p-6 text-center text-slate-400">ยังไม่มีบันทึก เริ่มเขียน Reflection แรกของคุณเลย!</p>';
+    return;
+  }
+  $('#reflectionList').innerHTML = list.map((r) => `
+    <div class="rounded-2xl bg-white/5 p-4">
+      <div class="flex items-center justify-between">
+        <span class="text-sm text-slate-400">${MOODS[r.mood] ?? ''} ${new Date(r.date).toLocaleString('th-TH', { dateStyle: 'medium', timeStyle: 'short' })}</span>
+        <button data-del="${r.id}" class="no-print text-xs text-rose-300 hover:text-rose-200">ลบ</button>
+      </div>
+      <p class="mt-2"><span class="text-violet-300">ความท้าทาย:</span> ${esc(r.challenge)}</p>
+      ${r.learned ? `<p class="mt-1"><span class="text-emerald-300">สิ่งที่เรียนรู้:</span> ${esc(r.learned)}</p>` : ''}
+      ${r.next ? `<p class="mt-1"><span class="text-sky-300">พรุ่งนี้จะลอง:</span> ${esc(r.next)}</p>` : ''}
+    </div>`).join('');
+}
+$('#reflectionList').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-del]');
+  if (b && confirm('ลบบันทึกนี้?')) {
+    state.reflections = state.reflections.filter((r) => r.id !== +b.dataset.del);
+    save(); renderReflections();
+  }
+});
+
+/* ================= DASHBOARD ================= */
+function bar(label, val, max, color) {
+  const pct = max ? Math.round(val / max * 100) : 0;
+  return `<div>
+    <div class="mb-1.5 flex justify-between text-sm"><span>${label}</span><span class="text-slate-300">${val}/${max} (${pct}%)</span></div>
+    <div class="h-3 overflow-hidden rounded-full bg-white/10"><div class="h-full rounded-full ${color} transition-all duration-700" style="width:${pct}%"></div></div>
+  </div>`;
+}
+function renderDashboard() {
+  const p = overallProgress();
+  $('#dashBars').innerHTML = `
+    <div class="flex items-center gap-5 rounded-2xl bg-white/5 p-5">
+      <div class="relative h-24 w-24 shrink-0 rounded-full" style="background:conic-gradient(#34d399 ${p * 3.6}deg, rgba(255,255,255,.1) 0)">
+        <div class="absolute inset-2 flex items-center justify-center rounded-full bg-slate-900 text-xl font-bold">${p}%</div>
+      </div>
+      <div><p class="font-semibold">ความก้าวหน้ารวม</p><p class="text-sm text-slate-300">บทเรียน 40% · Workshop 30% · แบบประเมิน 10% · เกม 10% · Reflection 10%</p></div>
+    </div>
+    ${bar('📘 บทเรียน', state.lessonsDone.length, LESSONS.length, 'bg-violet-400')}
+    ${bar('🔥 Workshop 30 วัน', state.workshop.length, WORKSHOP.length, 'bg-orange-400')}
+    ${bar('🎮 คะแนนเกมสูงสุด', state.game.best, SCENARIOS.length, 'bg-sky-400')}
+    ${bar('✍️ Reflection (เป้าหมาย 5 ครั้ง)', Math.min(state.reflections.length, 5), 5, 'bg-pink-400')}
+    ${bar('✅ Growth Checklist', state.checklist.length, CHECKLIST.length, 'bg-emerald-400')}`;
+  const a = state.assessment;
+  $('#dashAssessment').innerHTML = a
+    ? `<div class="rounded-2xl bg-white/5 p-4"><p class="text-sm text-slate-300">ผลแบบประเมินล่าสุด</p><p class="mt-1 text-lg font-semibold ${assessmentLabel(a.pct).c}">${assessmentLabel(a.pct).t} — ${a.pct}%</p></div>`
+    : `<div class="rounded-2xl bg-white/5 p-4 text-sm text-slate-300">ยังไม่ได้ทำแบบประเมิน <button class="no-print ml-1 underline" onclick="showTab('assessment')">ไปทำเลย →</button></div>`;
+  $('#checklist').innerHTML = CHECKLIST.map((c, i) => {
+    const on = state.checklist.includes(i);
+    return `<label class="flex cursor-pointer items-center gap-3 rounded-xl p-3 transition ${on ? 'bg-emerald-500/15' : 'bg-white/5 hover:bg-white/10'}">
+      <input type="checkbox" data-k="${i}" ${on ? 'checked' : ''} class="h-5 w-5 accent-emerald-400"><span>${c}</span></label>`;
+  }).join('');
+}
+$('#checklist').addEventListener('change', (e) => {
+  const i = +e.target.dataset.k;
+  if (e.target.checked) state.checklist.push(i);
+  else state.checklist = state.checklist.filter((x) => x !== i);
+  save(); renderDashboard();
+});
+
+/* ================= PROMPTS ================= */
+let promptCat = 'ทั้งหมด';
+function renderPrompts() {
+  const cats = ['ทั้งหมด', ...new Set(PROMPTS.map((p) => p.cat))];
+  $('#promptFilter').innerHTML = cats.map((c) => `<button data-cat="${c}" class="rounded-full px-4 py-1.5 text-sm transition ${c === promptCat ? 'bg-white text-slate-900' : 'bg-white/10 hover:bg-white/20'}">${c}</button>`).join('');
+  $('#promptGrid').innerHTML = PROMPTS.map((p, i) => ({ p, i })).filter(({ p }) => promptCat === 'ทั้งหมด' || p.cat === promptCat).map(({ p, i }) => `
+    <div class="flex flex-col rounded-2xl border border-white/15 bg-white/5 p-5">
+      <span class="w-fit rounded-full bg-violet-500/25 px-3 py-0.5 text-xs text-violet-200">${p.cat}</span>
+      <h3 class="mt-2 font-semibold">${p.title}</h3>
+      <p class="mt-2 flex-1 whitespace-pre-line text-sm leading-relaxed text-slate-300">${esc(p.text)}</p>
+      <button data-copy="${i}" class="no-print mt-4 w-fit rounded-xl bg-white/15 px-4 py-2 text-sm font-medium transition hover:bg-white/25">📋 คัดลอก Prompt</button>
+    </div>`).join('');
+}
+$('#promptFilter').addEventListener('click', (e) => {
+  const b = e.target.closest('button[data-cat]');
+  if (b) { promptCat = b.dataset.cat; renderPrompts(); }
+});
+$('#promptGrid').addEventListener('click', async (e) => {
+  const b = e.target.closest('button[data-copy]');
+  if (!b) return;
+  const text = PROMPTS[+b.dataset.copy].text;
+  try {
+    await navigator.clipboard.writeText(text);
+  } catch (err) {
+    const ta = document.createElement('textarea');
+    ta.value = text; document.body.appendChild(ta); ta.select();
+    document.execCommand('copy'); ta.remove();
+  }
+  b.textContent = '✓ คัดลอกแล้ว';
+  toast('คัดลอก Prompt แล้ว');
+  setTimeout(() => (b.textContent = '📋 คัดลอก Prompt'), 1500);
+});
+
+/* ================= RESET ================= */
+$('#btnReset').onclick = () => {
+  if (!confirm('ต้องการรีเซ็ตข้อมูลทั้งหมดใช่ไหม? (ไม่สามารถกู้คืนได้)')) return;
+  state = defaultState();
+  save(); renderAll(); showTab('lessons');
+  toast('รีเซ็ตข้อมูลเรียบร้อย');
+};
+
+/* ================= INIT ================= */
+function renderAll() {
+  renderHeader(); renderLessons(); renderAssessment(); renderGame();
+  renderWorkshop(); renderMood(); renderReflections(); renderDashboard(); renderPrompts();
+}
+renderAll();
+showTab(state.tab || 'lessons');
+</script>
+</body>
+</html>
